@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jogo de Memória Divertido</title>
+    <link rel="stylesheet" href="littlegame.css" />
+</head>
+
+<body>
+    <h1>🎮 Jogo de Memória Divertido 🎮</h1>
+
+    <div class="game-info">
+        <div>
+            <p>Movimentos</p>
+            <span id="moves">0</span>
+        </div>
+        <div>
+            <p>Tempo</p>
+            <span id="timer">0s</span>
+        </div>
+        <div>
+            <p>Pares</p>
+            <span id="pairs">0/8</span>
+        </div>
+    </div>
+
+    <div class="game-board" id="gameBoard"></div>
+
+    <div class="controls">
+        <button id="restartBtn">Reiniciar Jogo</button>
+        <button id="hintBtn">Dica (3)</button>
+    </div>
+
+    <div class="message" id="message">
+        <div class="message-content">
+            <h2>Parabéns! 🎉</h2>
+            <p id="messageText">Você completou o jogo!</p>
+            <button id="closeMessage">Jogar Novamente</button>
+        </div>
+    </div>
+
+    <script src="littlegame.js"></script>
+</body>
+
+</html>
