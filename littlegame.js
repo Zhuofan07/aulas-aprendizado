@@ -160,18 +160,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     "#ffff00",
                     "#ff00ff",
                     "#00ffff",
-                ];
-
-                for (let i = 0; i < 100; i++) {
+                    "#ff0257",
+                    "#7035c4ff",
+                    "#c51dc2ff",
+                    "#100ceeff",
+                    "#00eeffff",
+                    "#ff4000ff",
+                    "#ff0051ff",
+                    
+                    ,];
+                      //!bagulho dos conffetis
+                      //!bagulho dos conffetis
+                      //!bagulho dos conffetis
+                for (let i = 0; i < 300; i++) {
                     const confetti = document.createElement("div");
                     confetti.className = "confetti";
                     confetti.style.backgroundColor =
                         colors[Math.floor(Math.random() * colors.length)];
                     confetti.style.left = `${Math.random() * 100}vw`;
-                    confetti.style.width = `${Math.random() * 10 + 5}px`;
-                    confetti.style.height = `${Math.random() * 10 + 5}px`;
+                    confetti.style.width = `${Math.random() * 10 + 10}px`;
+                    confetti.style.height = `${Math.random() * 10 + 10}px`;
 
-                    const animationDuration = Math.random() * 3 + 2;
+                    const animationDuration = Math.random() * 12 + 8;
                     confetti.style.animation = `confetti-fall ${animationDuration}s linear forwards`;
 
                     document.body.appendChild(confetti);
