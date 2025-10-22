@@ -181,7 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     confetti.style.width = `${Math.random() * 10 + 10}px`;
                     confetti.style.height = `${Math.random() * 10 + 10}px`;
 
-                    const animationDuration = Math.random() * 12 + 8;
+                    
+             const animationDuration = Math.random() * 3 + 2;
                     confetti.style.animation = `confetti-fall ${animationDuration}s linear forwards`;
 
                     document.body.appendChild(confetti);
@@ -192,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     }, animationDuration * 1000);
                 }
             }
-
             // Dar dica
             function giveHint() {
                 if (hints <= 0) return;
