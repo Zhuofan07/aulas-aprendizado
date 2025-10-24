@@ -137,6 +137,7 @@ function updateTimer() {
     timerDisplay.textContent = `${timer}s`;
 }
 
+
 // Finalizar o jogo - JÁ INCLUI createConfetti()
 function endGame() {
     clearInterval(timerInterval);
