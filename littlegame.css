@@ -199,7 +199,7 @@ button:active {
                 opacity: 0;
             }
         }
-@media (max-width: 600px) {
+@media (max-width: 650px) {
     .game-board {
         grid-template-columns: repeat(3, 1fr);
     }

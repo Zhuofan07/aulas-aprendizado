@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dragão Interativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f1a30, #1d3a5c, #0f1a30);
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .title {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00a8ff, 0 0 20px #00a8ff;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #a0d2ff;
+            text-align: center;
+            max-width: 600px;
+            line-height: 1.5;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #dragonCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 30px;
+            text-align: center;
+            color: #a0d2ff;
+            font-size: 16px;
+            background: rgba(15, 26, 48, 0.7);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 1px solid #2a4a7a;
+            box-shadow: 0 0 15px rgba(0, 168, 255, 0.3);
+            z-index: 10;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        .moon {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #f5f3ce, #e6e3b9);
+            border-radius: 50%;
+            box-shadow: 0 0 40px #f5f3ce;
+            z-index: 2;
+        }
+        
+        .mountains {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(transparent, #0a1424);
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">INTERACTIVE DRAGON</h1>
+    <p class="subtitle">Move your cursor to guide the mystical dragon through the night sky</p>
+    
+    <div class="container">
+        <div class="stars" id="stars"></div>
+        <div class="moon"></div>
+        <div class="mountains"></div>
+        <canvas id="dragonCanvas"></canvas>
+        <div class="instructions">Move your mouse to control the dragon's flight path</div>
+    </div>
+
+    <script>
+        // Configurações iniciais
+        const canvas = document.getElementById('dragonCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Configurações do dragão
+        const segments = 25;
+        const dragonParts = [];
+        let pointer = { x: width / 2, y: height / 2 };
+        let rad = 5;
+        let radm = 15;
+        let frm = 0;
+        
+        // Inicializar partes do dragão
+        for (let i = 0; i < segments; i++) {
+            dragonParts.push({
+                x: width / 2,
+                y: height / 2,
+                size: (segments - i) / 2
+            });
+        }
+        
+        // Criar estrelas de fundo
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            starsContainer.appendChild(star);
+        }
+        
+        // Atualizar posição do ponteiro
+        document.addEventListener('mousemove', function(e) {
+            pointer.x = e.clientX;
+            pointer.y = e.clientY;
+        });
+        
+        // Redimensionar canvas
+        window.addEventListener('resize', function() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        });
+        
+        // Função para desenhar o dragão
+        function drawDragon() {
+            // Limpar canvas com transparência para efeito de rastro
+            ctx.fillStyle = 'rgba(15, 26, 48, 0.1)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Atualizar posições
+            const head = dragonParts[0];
+            const ax = (Math.cos(3 * frm) * rad * width) / height;
+            const ay = (Math.sin(4 * frm) * rad * height) / width;
+            
+            head.x += (ax + pointer.x - head.x) / 10;
+            head.y += (ay + pointer.y - head.y) / 10;
+            
+            // Atualizar segmentos do corpo
+            for (let i = 1; i < segments; i++) {
+                const part = dragonParts[i];
+                const prevPart = dragonParts[i - 1];
+                
+                const angle = Math.atan2(part.y - prevPart.y, part.x - prevPart.x);
+                part.x += (prevPart.x - part.x + (Math.cos(angle) * (segments - i)) / 5) / 4;
+                part.y += (prevPart.y - part.y + (Math.sin(angle) * (segments - i)) / 5) / 4;
+            }
+            
+            // Desenhar cauda e corpo
+            for (let i = segments - 1; i >= 0; i--) {
+                const part = dragonParts[i];
+                const intensity = 1 - (i / segments);
+                
+                // Cor do segmento - tons de azul e roxo
+                const r = Math.floor(50 + 100 * intensity);
+                const g = Math.floor(100 + 50 * intensity);
+                const b = Math.floor(200 + 55 * intensity);
+                
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.strokeStyle = `rgb(${r*0.7}, ${g*0.7}, ${b})`;
+                ctx.lineWidth = 2;
+                
+                // Tamanho do segmento baseado na posição no corpo
+                const size = 10 * (1 - i / segments) + 2;
+                
+                // Desenhar segmento
+                ctx.beginPath();
+                ctx.arc(part.x, part.y, size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Brilho interno
+                ctx.fillStyle = `rgba(150, 200, 255, 0.4)`;
+                ctx.beginPath();
+                ctx.arc(part.x, part.y, size * 0.6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Conectar segmentos
+                if (i > 0) {
+                    const prevPart = dragonParts[i - 1];
+                    ctx.beginPath();
+                    ctx.moveTo(prevPart.x, prevPart.y);
+                    ctx.lineTo(part.x, part.y);
+                    ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.7)`;
+                    ctx.lineWidth = size * 1.5;
+                    ctx.stroke();
+                    
+                    // Efeito de brilho na conexão
+                    ctx.strokeStyle = `rgba(150, 220, 255, 0.3)`;
+                    ctx.lineWidth = size * 0.8;
+                    ctx.stroke();
+                }
+            }
+            
+            // Desenhar cabeça
+            const headSize = 15;
+            ctx.fillStyle = 'rgb(80, 150, 255)';
+            ctx.strokeStyle = 'rgb(40, 100, 200)';
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.arc(head.x, head.y, headSize, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Brilho interno da cabeça
+            ctx.fillStyle = 'rgba(150, 200, 255, 0.4)';
+            ctx.beginPath();
+            ctx.arc(head.x, head.y, headSize * 0.7, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Desenhar olhos
+            const eyeOffsetX = headSize / 2;
+            const eyeOffsetY = headSize / 3;
+            
+            ctx.fillStyle = 'rgb(255, 255, 200)';
+            ctx.beginPath();
+            ctx.arc(head.x - eyeOffsetX, head.y - eyeOffsetY, headSize / 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(head.x + eyeOffsetX, head.y - eyeOffsetY, headSize / 3, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Desenhar pupilas
+            ctx.fillStyle = 'rgb(40, 40, 100)';
+            ctx.beginPath();
+            ctx.arc(head.x - eyeOffsetX, head.y - eyeOffsetY, headSize / 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(head.x + eyeOffsetX, head.y - eyeOffsetY, headSize / 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Brilho nos olhos
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(head.x - eyeOffsetX - 2, head.y - eyeOffsetY - 2, headSize / 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(head.x + eyeOffsetX - 2, head.y - eyeOffsetY - 2, headSize / 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Desenhar chifres
+            ctx.strokeStyle = 'rgb(120, 180, 255)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(head.x - headSize/2, head.y - headSize/2);
+            ctx.lineTo(head.x - headSize*1.5, head.y - headSize*2);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(head.x + headSize/2, head.y - headSize/2);
+            ctx.lineTo(head.x + headSize*1.5, head.y - headSize*2);
+            ctx.stroke();
+            
+            // Efeito de brilho nos chifres
+            ctx.strokeStyle = 'rgba(180, 220, 255, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(head.x - headSize/2, head.y - headSize/2);
+            ctx.lineTo(head.x - headSize*1.5, head.y - headSize*2);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(head.x + headSize/2, head.y - headSize/2);
+            ctx.lineTo(head.x + headSize*1.5, head.y - headSize*2);
+            ctx.stroke();
+            
+            // Desenhar asas
+            drawWing(head.x - headSize, head.y, -1); // Asa esquerda
+            drawWing(head.x + headSize, head.y, 1);  // Asa direita
+            
+            // Atualizar animação
+            if (rad < radm) rad += 0.1;
+            frm += 0.01;
+            
+            // Se o dragão ficar muito grande, voltar ao centro
+            if (rad > 60) {
+                pointer.x += (width / 2 - pointer.x) * 0.05;
+                pointer.y += (height / 2 - pointer.y) * 0.05;
+            }
+            
+            requestAnimationFrame(drawDragon);
+        }
+        
+        // Função para desenhar asas
+        function drawWing(x, y, direction) {
+            ctx.fillStyle = 'rgba(80, 150, 255, 0.6)';
+            ctx.strokeStyle = 'rgba(40, 100, 200, 0.8)';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.quadraticCurveTo(
+                x + direction * 40 * Math.sin(frm * 3), 
+                y - 60, 
+                x + direction * 80, 
+                y - 30
+            );
+            ctx.quadraticCurveTo(
+                x + direction * 60 * Math.sin(frm * 3 + 1), 
+                y - 10, 
+                x, 
+                y
+            );
+            ctx.fill();
+            ctx.stroke();
+            
+            // Detalhes da asa
+            ctx.strokeStyle = 'rgba(150, 200, 255, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + direction * 20, y - 15);
+            ctx.lineTo(x + direction * 50, y - 40);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(x + direction * 15, y - 25);
+            ctx.lineTo(x + direction * 45, y - 50);
+            ctx.stroke();
+        }
+        
+        // Iniciar animação
+        drawDragon();
+    </script>
+</body>
+</html>
